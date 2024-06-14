@@ -124,7 +124,7 @@
   },
   "resources": [
     {
-      "apiVersion": "2018-02-01",
+      "apiVersion": "2019-07-01",
       "name": "pid-23558be0-8a9c-5716-945f-90226ab6a404", 
       "type": "Microsoft.Resources/deployments",
       "plan": {
@@ -142,7 +142,7 @@
       }
     },
     {
-      "apiVersion": "2016-09-01",
+      "apiVersion": "2019-07-01",
       "type": "Microsoft.Network/virtualNetworks",
       "name": "[variables('networkSettings').virtualNetworkName]",
       "location": "[resourceGroup().location]",
@@ -164,7 +164,7 @@
     },
     {
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2016-09-01",
+      "apiVersion": "2019-07-01",
       "name": "[variables('publicIPAddressName')]",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -175,7 +175,7 @@
       }
     },
     {
-      "apiVersion": "2016-09-01",
+      "apiVersion": "2019-07-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('nicNameMaster')]",
       "location": "[resourceGroup().location]",
@@ -203,7 +203,7 @@
       }
     },
     {
-      "apiVersion": "2017-03-30",
+      "apiVersion": "2019-07-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmNameMaster')]",
       "location": "[resourceGroup().location]",
@@ -256,7 +256,7 @@
       },
       "resources": [
         {
-          "apiVersion": "2017-03-30",
+          "apiVersion": "2019-07-01",
           "type": "extensions",
           "name": "Installation",
           "location": "[resourceGroup().location]",
@@ -286,7 +286,7 @@
       ]
     },
     {
-      "apiVersion": "2016-09-01",
+      "apiVersion": "2019-07-01",
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[concat(variables('nicNamecompute'), copyindex())]",
       "location": "[resourceGroup().location]",
@@ -314,7 +314,7 @@
       }
     },
     {
-      "apiVersion": "2017-03-30",
+      "apiVersion": "2019-07-01",
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('vmNamecompute'), copyindex())]",
       "location": "[resourceGroup().location]",
