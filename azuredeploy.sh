@@ -35,7 +35,8 @@ NUM_OF_DATA_DISKS=${10}
 TEMPLATE_BASE=${11}
 
 # Get latest packages
-sudo apt-get update
+sudo yum update
+sudo yum upgrade
 
 # Create a cluster wide NFS share directory. Format and mount the data disk on master and install NFS
 sudo sh -c "mkdir /data" >> /tmp/azuredeploy.log.$$ 2>&1
@@ -43,7 +44,7 @@ if [ $NUM_OF_DATA_DISKS -eq 1 ]; then
   sudo sh -c "mkfs -t ext4 /dev/sdc" >> /tmp/azuredeploy.log.$$ 2>&1
   echo "UUID=`blkid -s UUID /dev/sdc | cut -d '"' -f2` /data ext4  defaults,discard 0 0" | sudo tee -a /etc/fstab >> /tmp/azuredeploy.log.$$ 2>&1
 else
-  sudo apt-get install lsscsi -y
+  sudo yum install lsscsi -y
   DEVICE_NAME_STRING=
   for device in `lsscsi |grep -v "/dev/sda \|/dev/sdb \|/dev/sr0 " | cut -d "/" -f3`; do 
    DEVICE_NAME_STRING_TMP=`echo /dev/$device`
@@ -57,7 +58,7 @@ fi
 sudo sh -c "mount /data" >> /tmp/azuredeploy.log.$$ 2>&1
 sudo sh -c "chown -R $ADMIN_USERNAME /data" >> /tmp/azuredeploy.log.$$ 2>&1
 sudo sh -c "chgrp -R $ADMIN_USERNAME /data" >> /tmp/azuredeploy.log.$$ 2>&1
-sudo apt-get install nfs-kernel-server -y >> /tmp/azuredeploy.log.$$ 2>&1
+sudo yum install nfs-kernel-server -y >> /tmp/azuredeploy.log.$$ 2>&1
 echo "/data 10.0.0.0/16(rw)" | sudo tee -a /etc/exports >> /tmp/azuredeploy.log.$$ 2>&1
 sudo systemctl restart nfs-kernel-server >> /tmp/azuredeploy.log.$$ 2>&1
 
@@ -75,7 +76,7 @@ sudo rm /data/tmp/computeNfs.sh
 sudo touch /data/tmp/computeNfs.sh
 sudo chmod u+x /data/tmp/computeNfs.sh
 echo "sudo sh -c \"mkdir /data\"" | sudo tee -a /data/tmp/computeNfs.sh >> /tmp/azuredeploy.log.$$ 2>&1
-echo "sudo apt-get install nfs-common -y" | sudo tee -a /data/tmp/computeNfs.sh >> /tmp/azuredeploy.log.$$ 2>&1
+echo "sudo yum install nfs-common -y" | sudo tee -a /data/tmp/computeNfs.sh >> /tmp/azuredeploy.log.$$ 2>&1
 echo "echo \"$MASTER_NAME:/data /data nfs rw,hard,intr 0 0\" | sudo tee -a /etc/fstab " | sudo tee -a /data/tmp/computeNfs.sh  >> /tmp/azuredeploy.log.$$ 2>&1
 echo "sudo sh -c \"mount /data\"" | sudo tee -a /data/tmp/computeNfs.sh >> /tmp/azuredeploy.log.$$ 2>&1
 
@@ -93,7 +94,7 @@ if ! [ -f /home/$ADMIN_USERNAME/.ssh/id_rsa ]; then
 fi
 
 # Install sshpass to automate ssh-copy-id action
-sudo apt-get install sshpass -y >> /tmp/azuredeploy.log.$$ 2>&1
+sudo yum install sshpass -y >> /tmp/azuredeploy.log.$$ 2>&1
 
 # Loop through all compute nodes, update hosts file and copy ssh public key to it
 # The script make the assumption that the node is called %COMPUTE+<index> and have
@@ -113,9 +114,9 @@ done
 ###################################
 
 # Install the package
-sudo apt-get update >> /tmp/azuredeploy.log.$$ 2>&1
+sudo yum update >> /tmp/azuredeploy.log.$$ 2>&1
 sudo chmod g-w /var/log >> /tmp/azuredeploy.log.$$ 2>&1 # Must do this before munge will generate key
-sudo apt-get install slurm-llnl -y >> /tmp/azuredeploy.log.$$ 2>&1
+sudo yum install slurm-llnl -y >> /tmp/azuredeploy.log.$$ 2>&1
 
 # Make a slurm spool directory
 sudo mkdir /var/spool/slurm
@@ -152,7 +153,7 @@ sudo -u slurm /usr/sbin/slurmctld >> /tmp/azuredeploy.log.$$ 2>&1 # Start the ma
 sudo munged --force >> /tmp/azuredeploy.log.$$ 2>&1 # Start munged
 sudo slurmd >> /tmp/azuredeploy.log.$$ 2>&1 # Start the node
 
-# Install slurm on all nodes by running apt-get
+# Install slurm on all nodes by running yum
 # Also push munge key and slurm.conf to them
 echo "Prepare the local copy of munge key" >> /tmp/azuredeploy.log.$$ 2>&1 
 mungekey=/data/tmp/munge.key
@@ -166,9 +167,9 @@ ls -la $mungekey >> /tmp/azuredeploy.log.$$ 2>&1
 # You can substitute your own specifics here
 
 # Install JDK and GNU packages required by Canu
-sudo apt-get install openjdk-8-jdk -y >> /tmp/azuredeploy.log.$$ 2>&1
-sudo apt-get install libgomp1 -y >> /tmp/azuredeploy.log.$$ 2>&1
-sudo apt-get install gnuplot -y >> /tmp/azuredeploy.log.$$ 2>&1
+sudo yum install openjdk-8-jdk -y >> /tmp/azuredeploy.log.$$ 2>&1
+sudo yum install libgomp1 -y >> /tmp/azuredeploy.log.$$ 2>&1
+sudo yum install gnuplot -y >> /tmp/azuredeploy.log.$$ 2>&1
 
 # Create a canu subdirectory within the /data shared folder and install it
 sudo -u $ADMIN_USERNAME sh -c "mkdir /data/canu" >> /tmp/azuredeploy.log.$$ 2>&1
@@ -201,8 +202,8 @@ do
       sudo chmod g-w /var/log
       sudo mkdir /var/spool/slurm
       sudo chown slurm /var/spool/slurm
-      sudo apt-get update
-      sudo apt-get install slurm-llnl -y
+      sudo yum update
+      sudo yum install slurm-llnl -y
       sudo cp -f /tmp/munge.key /etc/munge/munge.key
       sudo chown munge /etc/munge/munge.key
       sudo chgrp munge /etc/munge/munge.key
@@ -212,9 +213,9 @@ do
       sudo chown slurm /etc/slurm-llnl/slurm.conf
       sudo slurmd
       sudo echo "Installing packages required by Canu.  These can be removed if you don't need them."
-      sudo apt-get install openjdk-8-jdk -y
-      sudo apt-get install libgomp1 -y
-      sudo apt-get install gnuplot -y
+      sudo yum install openjdk-8-jdk -y
+      sudo yum install libgomp1 -y
+      sudo yum install gnuplot -y
 ENDSSH1
    i=`expr $i + 1`
 done
