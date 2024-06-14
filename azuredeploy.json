@@ -96,7 +96,6 @@
     "imagePublisher": "almalinux",
     "imageOffer": "almalinux-hpc",
     "almaOSVersion": "8_7-hpc-gen2",
-    "imageurn": "almalinux:almalinux-hpc:8_7-hpc-gen2:8.7.2023060101",
     "publicIPAddressName": "publicip",
     "vmNameMaster": "master",
     "vmNamecompute": "compute",
@@ -220,7 +219,6 @@
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
             "sku": "[variables('almaOSVersion')]",
-            "urn": "[variables('imageurn')]",
             "version": "latest"
           },
           "copy": [
@@ -326,7 +324,6 @@
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
             "sku": "[variables('almaOSVersion')]",
-            "urn": "[variables('imageurn')]",
             "version": "latest"
           },
           "osDisk": {
