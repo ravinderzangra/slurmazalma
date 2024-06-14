@@ -3,5 +3,5 @@
   "description": "Creates a SLURM cluster with a master vm and a configurable number of compute.",
   "githubUsername": "ravinderzangra",
   "summary": "slurmaz",
-  "dateUpdated": "2024-05-30"
+  "dateUpdated": "2024-06-14"
 }
