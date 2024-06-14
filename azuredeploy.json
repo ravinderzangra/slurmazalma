@@ -33,7 +33,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Enable Accelerated Networking.  Use with caution: only available for certain VM sizes and deploys will fail if you incorrectly turn it on."
+        "description": "Enable Accelerated Networking. Use with caution: only available for certain VM sizes and deploys will fail if you incorrectly turn it on."
       }
     },
     "sharedDiskSize": {
@@ -42,7 +42,7 @@
       "minValue": 32,
       "maxValue": 4095,
       "metadata": {
-        "description": "Size of the shared data disk(s) in GB.  Will exported from the master node and mounted on computes."
+        "description": "Size of the shared data disk(s) in GB. Will be exported from the master node and mounted on computes."
       }
     },
     "sharedDiskNumber": {
@@ -51,7 +51,7 @@
       "minValue": 1,
       "maxValue": 64,
       "metadata": {
-        "description": "Number of shared data disk(s) on the master.  Maximum number varies based on the size of VM. Specifying more than 1 will create a single software RAID 0 using all disks."
+        "description": "Number of shared data disk(s) on the master. Maximum number varies based on the size of VM. Specifying more than 1 will create a single software RAID 0 using all disks."
       }
     },
     "vmSize": {
@@ -65,7 +65,7 @@
       "type": "bool",
       "defaultValue": false,
       "metadata": {
-        "description": "Enable Accelerated Networking.  Use with caution: only available for certain VM sizes and deploys will fail if you incorrectly turn it on."
+        "description": "Enable Accelerated Networking. Use with caution: only available for certain VM sizes and deploys will fail if you incorrectly turn it on."
       }
     },
     "scaleNumber": {
@@ -86,16 +86,16 @@
     "_artifactsLocationSasToken": {
       "type": "securestring",
       "metadata": {
-        "description": "The sasToken required to access _artifactsLocation.  When the template is deployed using the accompanying scripts, a sasToken will be automatically generated."
+        "description": "The sasToken required to access _artifactsLocation. When the template is deployed using the accompanying scripts, a sasToken will be automatically generated."
       },
       "defaultValue": ""
     }
   },
   "variables": {
     "dnsName": "[concat('slurm-', uniqueString(resourceGroup().id))]",
-    "imagePublisher": "Canonical",
-    "imageOffer": "UbuntuServer",
-    "ubuntuOSVersion": "16.04-LTS",
+    "imagePublisher": "almalinux",
+    "imageOffer": "almalinux-hpc",
+    "almaLinuxOSVersion": "8_7-gen2",  // Use the correct version as per your needs
     "publicIPAddressName": "publicip",
     "vmNameMaster": "master",
     "vmNamecompute": "compute",
@@ -125,14 +125,14 @@
   "resources": [
     {
       "apiVersion": "2018-02-01",
-      "name": "pid-23558be0-8a9c-5716-945f-90226ab6a404", 
+      "name": "pid-23558be0-8a9c-5716-945f-90226ab6a404",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
         "template": {
-            "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-            "contentVersion": "1.0.0.0",
-            "resources": []
+          "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "resources": []
         }
       }
     },
@@ -151,7 +151,7 @@
           {
             "name": "[variables('networkSettings').subnet.dse.name]",
             "properties": {
-              "addressPrefix": "[variables('networkSettings').subnet.dse.prefix]"
+              "addressPrefix": "[variables('networkSettings').subnet.dse.prefix)]"
             }
           }
         ]
@@ -184,7 +184,7 @@
             "name": "ipconfig1",
             "properties": {
               "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[variables('networkSettings').statics.master]",
+              "privateIPAddress": "[variables('networkSettings').statics.master)]",
               "publicIPAddress": {
                 "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
               },
@@ -194,7 +194,7 @@
             }
           }
         ],
-        "enableAcceleratedNetworking" : "[parameters('vmHeadNodeAcceleratedNetworking')]"
+        "enableAcceleratedNetworking": "[parameters('vmHeadNodeAcceleratedNetworking')]"
       }
     },
     {
@@ -218,23 +218,20 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[variables('ubuntuOSVersion')]",
+            "sku": "[variables('almaLinuxOSVersion')]",
             "version": "latest"
           },
-          "copy": [
-            {
-              "name": "dataDisks",
-              "count": "[parameters('sharedDiskNumber')]",
-              "input": {
-                "diskSizeGB": "[parameters('sharedDiskSize')]",
-                "lun": "[copyIndex('dataDisks')]",
-                "createOption": "Empty"
-              }
-            }
-          ],
           "osDisk": {
-            "createOption": "FromImage"
-          }        
+            "createOption": "FromImage",
+            "caching": "ReadWrite"
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "createOption": "Empty",
+              "diskSizeGB": "[parameters('sharedDiskSize')]"
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -242,80 +239,33 @@
               "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('nicNameMaster'))]"
             }
           ]
-        }
-      },
-      "resources": [
-        {
-          "apiVersion": "2017-03-30",
-          "type": "extensions",
-          "name": "Installation",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[variables('vmNameMaster')]"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Azure.Extensions",
-            "type": "CustomScript",
-            "typeHandlerVersion": "2.0",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "fileUris": [
-                "[concat(parameters('_artifactsLocation'), '/azuredeploy.sh', parameters('_artifactsLocationSasToken'))]"
-              ]
-            },
-            "protectedSettings": {
-              "commandToExecute": "[variables('installationCLI')]"
-            }
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https://', variables('dnsName'), 'diag.blob.core.windows.net')]"
           }
         }
-      ]
-    },
-    {
-      "apiVersion": "2016-09-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('nicNamecompute'), copyindex())]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[variables('networkSettings').virtualNetworkName]"
-      ],
-      "copy": {
-        "name": "nicLoop",
-        "count": "[parameters('scaleNumber')]"
-      },
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAllocationMethod": "Static",
-              "privateIPAddress": "[concat(variables('networkSettings').statics.computeRange.base, copyindex(variables('networkSettings').statics.computeRange.start))]",
-              "subnet": {
-                "id": "[variables('subnetRef')]"
-              }
-            }
-          }
-        ],
-        "enableAcceleratedNetworking" : "[parameters('vmAcceleratedNetworking')]"
       }
     },
     {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(variables('vmNamecompute'), copyindex())]",
+      "name": "[concat(variables('vmNamecompute'), copyIndex(1))]",
       "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "nicLoop"
-      ],
       "copy": {
-        "name": "foo",
+        "name": "computeVMs",
         "count": "[parameters('scaleNumber')]"
       },
+      "dependsOn": [
+        "[variables('vmNameMaster')]"
+      ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[concat(variables('vmNamecompute'), copyindex())]",
+          "computerName": "[concat(variables('vmNamecompute'), copyIndex(1))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -323,27 +273,62 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[variables('ubuntuOSVersion')]",
+            "sku": "[variables('almaLinuxOSVersion')]",
             "version": "latest"
           },
           "osDisk": {
-            "createOption": "FromImage"
+            "createOption": "FromImage",
+            "caching": "ReadWrite"
           }
         },
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicNamecompute'), copyindex()))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nicNamecompute'), copyIndex(1)))]"
             }
           ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https://', variables('dnsName'), 'diag.blob.core.windows.net')]"
+          }
         }
+      }
+    },
+    {
+      "apiVersion": "2016-09-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(variables('nicNamecompute'), copyIndex(1))]",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "computeNICs",
+        "count": "[parameters('scaleNumber')]"
+      },
+      "dependsOn": [
+        "[variables('networkSettings').virtualNetworkName]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[concat(variables('networkSettings').statics.computeRange.base, add(copyIndex(1), variables('networkSettings').statics.computeRange.start))]",
+              "subnet": {
+                "id": "[variables('subnetRef')]"
+              }
+            }
+          }
+        ],
+        "enableAcceleratedNetworking": "[parameters('vmAcceleratedNetworking')]"
       }
     }
   ],
   "outputs": {
-    "dnsName": {
+    "publicIPAddress": {
       "type": "string",
-      "value": "[reference(variables('publicIPAddressName')).dnsSettings.fqdn]"
+      "value": "[reference(resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))).dnsSettings.fqdn]"
     }
   }
 }
