@@ -207,6 +207,11 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmNameMaster')]",
       "location": "[resourceGroup().location]",
+      "plan": {
+                "name": "8_7-hpc-gen2",
+                "product": "almalinux-hpc",
+                "publisher": "almalinux"
+            },
       "dependsOn": [
         "[variables('nicNameMaster')]"
       ],
@@ -313,6 +318,11 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('vmNamecompute'), copyindex())]",
       "location": "[resourceGroup().location]",
+      "plan": {
+                "name": "8_7-hpc-gen2",
+                "product": "almalinux-hpc",
+                "publisher": "almalinux"
+            },
       "dependsOn": [
         "nicLoop"
       ],
