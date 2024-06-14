@@ -93,6 +93,9 @@
   },
   "variables": {
     "dnsName": "[concat('slurm-', uniqueString(resourceGroup().id))]",
+    "imagePublisher": "almalinux",
+    "imageOffer": "almalinux-hpc",
+    "almaOSVersion": "8_7-hpc-gen2",
     "publicIPAddressName": "publicip",
     "vmNameMaster": "master",
     "vmNamecompute": "compute",
@@ -218,10 +221,10 @@
         },
         "storageProfile": {
           "imageReference": {
-             "publisher": "almalinux",
-             "offer": "almalinux-hpc",
-             "sku": "8_7-hpc-gen2",
-             "version": "latest"
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[variables('almaOSVersion')]",
+            "version": "latest"
           },
           "copy": [
             {
@@ -328,10 +331,10 @@
         },
         "storageProfile": {
           "imageReference": {
-             "publisher": "almalinux",
-             "offer": "almalinux-hpc",
-             "sku": "8_7-hpc-gen2",
-             "version": "latest"
+            "publisher": "[variables('imagePublisher')]",
+            "offer": "[variables('imageOffer')]",
+            "sku": "[variables('almaOSVersion')]",
+            "version": "latest"
           },
           "osDisk": {
             "createOption": "FromImage"
