@@ -95,7 +95,7 @@
     "dnsName": "[concat('slurm-', uniqueString(resourceGroup().id))]",
     "imagePublisher": "almalinux",
     "imageOffer": "almalinux-hpc",
-    "almaLinuxOSVersion": "8_7-gen2",  // Use the correct version as per your needs
+    "almaLinuxOSVersion": "8_7-hpc-gen2",  // Use the correct version as per your needs
     "publicIPAddressName": "publicip",
     "vmNameMaster": "master",
     "vmNamecompute": "compute",
