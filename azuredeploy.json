@@ -124,6 +124,11 @@
       "apiVersion": "2018-02-01",
       "name": "pid-23558be0-8a9c-5716-945f-90226ab6a404", 
       "type": "Microsoft.Resources/deployments",
+      "plan": {
+                "name": "8_7-hpc-gen2",
+                "product": "almalinux-hpc",
+                "publisher": "almalinux"
+            },
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -212,11 +217,12 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "plan": {
-                "name": "8_7-hpc-gen2",
-                "product": "almalinux-hpc",
-                "publisher": "almalinux"
-            },
+          "imageReference": {
+             "publisher": "almalinux",
+             "offer": "almalinux-hpc",
+             "sku": "8_7-hpc-gen2",
+             "version": "latest"
+          },
           "copy": [
             {
               "name": "dataDisks",
@@ -246,6 +252,11 @@
           "type": "extensions",
           "name": "Installation",
           "location": "[resourceGroup().location]",
+          "plan": {
+                "name": "8_7-hpc-gen2",
+                "product": "almalinux-hpc",
+                "publisher": "almalinux"
+            },
           "dependsOn": [
             "[variables('vmNameMaster')]"
           ],
@@ -316,11 +327,12 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "plan": {
-                "name": "8_7-hpc-gen2",
-                "product": "almalinux-hpc",
-                "publisher": "almalinux"
-            },
+          "imageReference": {
+             "publisher": "almalinux",
+             "offer": "almalinux-hpc",
+             "sku": "8_7-hpc-gen2",
+             "version": "latest"
+          },
           "osDisk": {
             "createOption": "FromImage"
           }
