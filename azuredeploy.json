@@ -93,7 +93,7 @@
   },
   "variables": {
     "dnsName": "[concat('slurm-', uniqueString(resourceGroup().id))]",
-    "imagePublisher": "almalinux",
+    "name": "almalinux",
     "imageOffer": "almalinux-hpc",
     "almaOSVersion": "8_7-hpc-gen2",
     "publicIPAddressName": "publicip",
@@ -215,12 +215,11 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "imageReference": {
-            "publisher": "[variables('imagePublisher')]",
-            "offer": "[variables('imageOffer')]",
-            "sku": "[variables('almaOSVersion')]",
-            "version": "latest"
-          },
+          "plan": {
+                "name": "8_7-hpc-gen2",
+                "product": "almalinux-hpc",
+                "publisher": "almalinux"
+            },
           "copy": [
             {
               "name": "dataDisks",
@@ -320,13 +319,11 @@
           "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
-          "imageReference": {
-            "exactVersion": "8.7.2024042601",
-            "publisher": "[variables('imagePublisher')]",
-            "offer": "[variables('imageOffer')]",
-            "sku": "[variables('almaOSVersion')]",
-            "version": "latest"
-          },
+          "plan": {
+                "name": "8_7-hpc-gen2",
+                "product": "almalinux-hpc",
+                "publisher": "almalinux"
+            },
           "osDisk": {
             "createOption": "FromImage"
           }
