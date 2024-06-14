@@ -321,6 +321,7 @@
         },
         "storageProfile": {
           "imageReference": {
+            "exactVersion": "8.7.2024042601",
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
             "sku": "[variables('almaOSVersion')]",
