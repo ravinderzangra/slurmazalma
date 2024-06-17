@@ -250,11 +250,6 @@
           "type": "extensions",
           "name": "Installation",
           "location": "[resourceGroup().location]",
-          "plan": {
-                "name": "8_7-hpc-gen2",
-                "product": "almalinux-hpc",
-                "publisher": "almalinux"
-            },
           "dependsOn": [
             "[variables('vmNameMaster')]"
           ],
