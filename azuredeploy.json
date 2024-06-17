@@ -127,11 +127,6 @@
       "apiVersion": "2018-02-01",
       "name": "pid-23558be0-8a9c-5716-945f-90226ab6a404", 
       "type": "Microsoft.Resources/deployments",
-      "plan": {
-                "name": "8_7-hpc-gen2",
-                "product": "almalinux-hpc",
-                "publisher": "almalinux"
-            },
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -207,11 +202,6 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[variables('vmNameMaster')]",
       "location": "[resourceGroup().location]",
-      "plan": {
-                "name": "8_7-hpc-gen2",
-                "product": "almalinux-hpc",
-                "publisher": "almalinux"
-            },
       "dependsOn": [
         "[variables('nicNameMaster')]"
       ],
@@ -318,11 +308,6 @@
       "type": "Microsoft.Compute/virtualMachines",
       "name": "[concat(variables('vmNamecompute'), copyindex())]",
       "location": "[resourceGroup().location]",
-      "plan": {
-                "name": "8_7-hpc-gen2",
-                "product": "almalinux-hpc",
-                "publisher": "almalinux"
-            },
       "dependsOn": [
         "nicLoop"
       ],
