@@ -93,9 +93,9 @@
   },
   "variables": {
     "dnsName": "[concat('slurm-', uniqueString(resourceGroup().id))]",
-    "imagePublisher": "Canonical",
-    "imageOffer": "UbuntuServer",
-    "almaOSVersion": "16.04-LTS",
+    "imagePublisher": "RedHat",
+    "imageOffer": "RHEL",
+    "almaOSVersion": "7.8",
     "publicIPAddressName": "publicip",
     "vmNameMaster": "master",
     "vmNamecompute": "compute",
