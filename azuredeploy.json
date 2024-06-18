@@ -93,9 +93,9 @@
   },
   "variables": {
     "dnsName": "[concat('slurm-', uniqueString(resourceGroup().id))]",
-    "imagePublisher": "almalinux",
-    "imageOffer": "almalinux-hpc",
-    "almaOSVersion": "8_7-hpc-gen2",
+    "imagePublisher": "openlogic",
+    "imageOffer": "centos-hpc",
+    "almaOSVersion": "6_5-ARM",
     "publicIPAddressName": "publicip",
     "vmNameMaster": "master",
     "vmNamecompute": "compute",
